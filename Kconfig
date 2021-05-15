@@ -1,0 +1,7 @@
+mainmenu "Kmake-Example Configuration"
+
+config CONFIG_BOOL
+	bool "kmake-example bool configuration"
+	default n
+	help
+	  This is a kmake-example bool configuration test.
