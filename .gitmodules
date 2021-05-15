@@ -1,4 +1,4 @@
 [submodule "kmake"]
 	ignore = dirty
 	path = kmake
-	url = https://github.com/jiauzhang/kmake.git
+	url = https://github.com/jiauzhang/kmake
