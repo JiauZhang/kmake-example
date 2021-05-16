@@ -81,23 +81,23 @@ export KBUILD_USERLDFLAGS :=
 # Alternatively CROSS_COMPILE can be set in the environment.
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
-CPP		= $(CC) -E
-CC		= $(CROSS_COMPILE)gcc
-LD		= $(CROSS_COMPILE)ld
-AR		= $(CROSS_COMPILE)ar
-NM		= $(CROSS_COMPILE)nm
+CPP     = $(CC) -E
+CC      = $(CROSS_COMPILE)gcc
+LD      = $(CROSS_COMPILE)ld
+AR      = $(CROSS_COMPILE)ar
+NM      = $(CROSS_COMPILE)nm
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = $(CROSS_COMPILE)objdump
 READELF = $(CROSS_COMPILE)readelf
 STRIP   = $(CROSS_COMPILE)strip
 
-LEX		= flex
-YACC	= bison
-AWK		= awk
-PERL	= perl
-BASH	= bash
-KGZIP	= gzip
-KBZIP2	= bzip2
+LEX    = flex
+YACC   = bison
+AWK    = awk
+PERL   = perl
+BASH   = bash
+KGZIP  = gzip
+KBZIP2 = bzip2
 
 LINUXINCLUDE    := \
 		-I$(srctree)/arch/$(SRCARCH)/include \
@@ -118,6 +118,30 @@ export CPP AR NM STRIP OBJCOPY OBJDUMP READELF LEX YACC
 export PERL MAKE UTS_MACHINE HOSTCXX
 export KGZIP KBZIP2
 export KBUILD_CPPFLAGS NOSTDINC_FLAGS LINUXINCLUDE OBJCOPYFLAGS KBUILD_LDFLAGS
+
+clean-targets := %clean mrproper cleandocs
+no-dot-config-targets := $(clean-targets) \
+			 cscope gtags TAGS tags help% %docs check% coccicheck \
+			 $(version_h) headers headers_% archheaders archscripts \
+			 %asm-generic kernelversion %src-pkg dt_binding_check \
+			 outputmakefile
+no-sync-config-targets := $(no-dot-config-targets) %install kernelrelease \
+			  image_name
+
+need-config	:= 1
+may-sync-config	:= 1
+
+ifneq ($(filter $(no-dot-config-targets), $(MAKECMDGOALS)),)
+	ifeq ($(filter-out $(no-dot-config-targets), $(MAKECMDGOALS)),)
+		need-config :=
+	endif
+endif
+
+ifneq ($(filter $(no-sync-config-targets), $(MAKECMDGOALS)),)
+	ifeq ($(filter-out $(no-sync-config-targets), $(MAKECMDGOALS)),)
+		may-sync-config :=
+	endif
+endif
 
 # Basic helpers built in kmake/basic/
 PHONY += scripts_basic
