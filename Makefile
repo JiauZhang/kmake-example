@@ -59,10 +59,7 @@ KCONFIG_CONFIG ?= .config
 export KCONFIG_CONFIG
 
 # SHELL used by kbuild
-CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
-	  else if [ -x /bin/bash ]; then echo /bin/bash; \
-	  else echo sh; fi ; fi \
-)
+CONFIG_SHELL := sh
 
 HOSTCC       = gcc
 HOSTCXX      = g++

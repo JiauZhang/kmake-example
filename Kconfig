@@ -1,31 +1,3 @@
 mainmenu "Kmake-Example Configuration"
 
-config BOOL
-	bool "kmake-example bool configuration"
-	default y
-	help
-	  This is a kmake-example of bool configuration test.
-
-config TRISTATE
-	tristate "kmake-example tristate configuration"
-	default y
-	help
-		This is a kmake-example of tristate configuration test.
-
-config STRING
-	string "kmake-example string configuration"
-	default "hello"
-	help
-		This is a kmake-example of string configuration test.
-
-config HEX
-	hex "kmake-example hex configuration"
-	default 0xdeadbeef
-	help
-		This is a kmake-example of hex configuration test.
-
-config INT
-	int "kmake-example int configuration"
-	default 123456
-	help
-		This is a kmake-example of int configuration test.
+source "arch/$(ARCH)/Kconfig"

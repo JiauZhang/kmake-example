@@ -1,0 +1,29 @@
+config ARM_BOOL
+	bool "kmake-example arm_bool configuration"
+	default y
+	help
+	  This is a kmake-example of arm_bool configuration test.
+
+config ARM_TRISTATE
+	tristate "kmake-example arm_tristate configuration"
+	default y
+	help
+	  This is a kmake-example of arm_tristate configuration test.
+
+config ARM_STRING
+	string "kmake-example arm_string configuration"
+	default "hello"
+	help
+	  This is a kmake-example of arm_string configuration test.
+
+config ARM_HEX
+	hex "kmake-example arm_hex configuration"
+	default 0xdeadbeef
+	help
+	  This is a kmake-example of arm_hex configuration test.
+
+config ARM_INT
+	int "kmake-example arm_int configuration"
+	default 123456
+	help
+	  This is a kmake-example of arm_int configuration test.

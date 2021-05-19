@@ -1,0 +1,29 @@
+config X86_BOOL
+	bool "kmake-example x86_bool configuration"
+	default y
+	help
+        This is a kmake-example of x86_bool configuration test.
+
+config X86_TRISTATE
+	tristate "kmake-example x86_tristate configuration"
+	default y
+	help
+        This is a kmake-example of x86_tristate configuration test.
+
+config X86_STRING
+	string "kmake-example x86_string configuration"
+	default "hello"
+	help
+        This is a kmake-example of x86_string configuration test.
+
+config X86_HEX
+	hex "kmake-example x86_hex configuration"
+	default 0xdeadbeef
+	help
+        This is a kmake-example of x86_hex configuration test.
+
+config X86_INT
+	int "kmake-example x86_int configuration"
+	default 123456
+	help
+        This is a kmake-example of x86_int configuration test.
