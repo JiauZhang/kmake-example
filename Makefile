@@ -97,6 +97,7 @@ KGZIP  = gzip
 KBZIP2 = bzip2
 
 LINUXINCLUDE    := \
+		-I$(objtree)/include \
 		-I$(srctree)/arch/$(SRCARCH)/include \
 		-I$(objtree)/arch/$(SRCARCH)/include/generated \
 		$(USERINCLUDE)
@@ -120,10 +121,9 @@ clean-targets := %clean mrproper cleandocs
 no-dot-config-targets := $(clean-targets) \
 			 cscope gtags TAGS tags help% %docs check% coccicheck \
 			 $(version_h) headers headers_% archheaders archscripts \
-			 %asm-generic kernelversion %src-pkg dt_binding_check \
-			 outputmakefile
-no-sync-config-targets := $(no-dot-config-targets) %install kernelrelease \
-			  image_name
+			 %asm-generic kernelversion %src-pkg dt_binding_check
+
+no-sync-config-targets := $(no-dot-config-targets)
 
 need-config	:= 1
 may-sync-config	:= 1
@@ -140,6 +140,21 @@ ifneq ($(filter $(no-sync-config-targets), $(MAKECMDGOALS)),)
 	endif
 endif
 
+init-y := init/
+libs-y := lib/
+
+build-dirs := $(patsubst %/,%,$(init-y) $(libs-y))
+build-objs := $(patsubst %/,%/built-in.a,$(init-y) $(libs-y))
+
+$(build-objs): $(build-dirs)
+
+kmake-example: $(build-objs)
+	$(Q)$(LD) $(build-objs) -o $@
+
+PHONY += $(build-dirs)
+$(build-dirs): prepare
+	$(Q)$(MAKE) $(build)=$@
+
 # Basic helpers built in kmake/basic/
 PHONY += scripts_basic
 scripts_basic:
@@ -153,6 +168,16 @@ config: scripts_basic FORCE
 
 %config: scripts_basic FORCE
 	$(Q)$(MAKE) $(build)=kmake/kconfig $@
+
+quiet_cmd_syncconfig = SYNC    $@
+      cmd_syncconfig = $(MAKE) -f $(srctree)/Makefile syncconfig
+
+%/config/auto.conf %/config/auto.conf.cmd %/generated/autoconf.h: $(KCONFIG_CONFIG)
+	+$(call cmd,syncconfig)
+
+PHONY += prepare
+
+prepare: include/generated/autoconf.h
 
 PHONY += FORCE
 FORCE:
