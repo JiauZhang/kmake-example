@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <generated/autoconf.h>
+#include <print.h>
 
 void print_string()
 {
-    printf("%s\n", CONFIG_X86_STRING);
+    char *str = CONFIG_X86_STRING;
+    printf("autoconf string: %s\n", str);
 }

@@ -29,6 +29,9 @@ export quiet Q KBUILD_VERBOSE
 PHONY := _all
 _all:
 
+KBUILD_BUILTIN := 1
+export KBUILD_BUILTIN
+
 # Cancel implicit rules on top Makefile
 $(CURDIR)/Makefile Makefile: ;
 
@@ -109,7 +112,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
 		   -Werror=return-type -Wno-format-security \
 		   -std=gnu89
 
-NOSTDINC_FLAGS += -nostdinc -isystem $(shell $(CC) -print-file-name=include)
+# NOSTDINC_FLAGS += -nostdinc -isystem $(shell $(CC) -print-file-name=include)
 
 export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC CROSS_COMPILE LD CC
 export CPP AR NM STRIP OBJCOPY OBJDUMP READELF LEX YACC
@@ -149,11 +152,11 @@ build-objs := $(patsubst %/,%/built-in.a,$(init-y) $(libs-y))
 $(build-objs): $(build-dirs)
 
 kmake-example: $(build-objs)
-	$(Q)$(LD) $(build-objs) -o $@
+	$(Q)$(CC) $(build-objs) -o $@
 
 PHONY += $(build-dirs)
 $(build-dirs): prepare
-	$(Q)$(MAKE) $(build)=$@
+	$(Q)$(MAKE) $(build)=$@ need-builtin=1
 
 # Basic helpers built in kmake/basic/
 PHONY += scripts_basic
