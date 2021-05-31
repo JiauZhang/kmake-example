@@ -143,9 +143,13 @@ ifneq ($(filter $(no-sync-config-targets), $(MAKECMDGOALS)),)
 	endif
 endif
 
+-include include/config/auto.conf
+
 init-y := init/
 libs-y := lib/
 
+include $(srctree)/arch/Makefile
+$(info machine-y: $(machine-y))
 build-dirs := $(patsubst %/,%,$(init-y) $(libs-y))
 build-objs := $(patsubst %/,%/built-in.a,$(init-y) $(libs-y))
 
@@ -154,17 +158,16 @@ $(build-objs): $(build-dirs)
 kmake-example: $(build-objs)
 	$(Q)$(CC) $(build-objs) -o $@
 
-PHONY += $(build-dirs)
-$(build-dirs): prepare
-	$(Q)$(MAKE) $(build)=$@ need-builtin=1
-
 # Basic helpers built in kmake/basic/
 PHONY += scripts_basic
 scripts_basic:
 	$(Q)$(MAKE) $(build)=kmake/basic
 	$(Q)rm -f .tmp_quiet_recordmcount
 
-include $(srctree)/arch/$(SRCARCH)/Makefile
+PHONY += $(build-dirs)
+$(build-dirs): prepare
+	$(info build-dir: $@)
+	$(Q)$(MAKE) $(build)=$@ need-builtin=1
 
 config: scripts_basic FORCE
 	$(Q)$(MAKE) $(build)=kmake/kconfig $@

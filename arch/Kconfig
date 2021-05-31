@@ -1,0 +1,11 @@
+menu "choice architecture"
+
+config ARCH_ARM
+    bool "select arm architecture"
+
+config ARCH_X86
+    bool "select x86 architecture"
+
+endmenu
+
+source "arch/$(ARCH)/Kconfig"
