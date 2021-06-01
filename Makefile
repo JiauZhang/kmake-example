@@ -35,7 +35,7 @@ export KBUILD_BUILTIN
 # Cancel implicit rules on top Makefile
 $(CURDIR)/Makefile Makefile: ;
 
-_all: all
+_all: kmake-example
 
 srctree := $(CURDIR)
 objtree := $(CURDIR)
@@ -149,7 +149,7 @@ init-y := init/
 libs-y := lib/
 
 include $(srctree)/arch/Makefile
-$(info machine-y: $(machine-y))
+
 build-dirs := $(patsubst %/,%,$(init-y) $(libs-y))
 build-objs := $(patsubst %/,%/built-in.a,$(init-y) $(libs-y))
 
@@ -166,7 +166,6 @@ scripts_basic:
 
 PHONY += $(build-dirs)
 $(build-dirs): prepare
-	$(info build-dir: $@)
 	$(Q)$(MAKE) $(build)=$@ need-builtin=1
 
 config: scripts_basic FORCE
