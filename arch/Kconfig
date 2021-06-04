@@ -1,4 +1,6 @@
-menu "choice architecture"
+choice
+    prompt "choice architecture"
+    default ARCH_ARM
 
 config ARCH_ARM
     bool "select arm architecture"
@@ -6,6 +8,9 @@ config ARCH_ARM
 config ARCH_X86
     bool "select x86 architecture"
 
-endmenu
+config ARCH_MIPS
+    bool "select mips architecture"
+
+endchoice
 
 source "arch/$(ARCH)/Kconfig"

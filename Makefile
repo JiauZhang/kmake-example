@@ -128,9 +128,9 @@ no-dot-config-targets := $(clean-targets) \
 
 no-sync-config-targets := $(no-dot-config-targets)
 
+config-build :=
 need-config	:= 1
 may-sync-config	:= 1
-
 ifneq ($(filter $(no-dot-config-targets), $(MAKECMDGOALS)),)
 	ifeq ($(filter-out $(no-dot-config-targets), $(MAKECMDGOALS)),)
 		need-config :=
@@ -143,6 +143,26 @@ ifneq ($(filter $(no-sync-config-targets), $(MAKECMDGOALS)),)
 	endif
 endif
 
+ifneq ($(filter %config,$(MAKECMDGOALS)),)
+	config-build := 1
+endif
+
+# Basic helpers built in kmake/basic/
+PHONY += scripts_basic
+scripts_basic:
+	$(Q)$(MAKE) $(build)=kmake/basic
+	$(Q)rm -f .tmp_quiet_recordmcount
+
+ifdef config-build
+include $(srctree)/arch/Makefile
+
+config: scripts_basic FORCE
+	$(Q)$(MAKE) $(build)=kmake/kconfig $@
+
+%config: scripts_basic FORCE
+	$(Q)$(MAKE) $(build)=kmake/kconfig $@
+
+else # !config-build
 -include include/config/auto.conf
 
 init-y := init/
@@ -153,26 +173,17 @@ include $(srctree)/arch/Makefile
 build-dirs := $(patsubst %/,%,$(init-y) $(libs-y))
 build-objs := $(patsubst %/,%/built-in.a,$(init-y) $(libs-y))
 
+clean-dirs := $(sort $(build-dirs) $(patsubst %/,%,$(filter %/, $(init-) $(libs-))))
+
 $(build-objs): $(build-dirs)
 
 kmake-example: $(build-objs)
+	@echo "  CC      $@"
 	$(Q)$(CC) $(build-objs) -o $@
-
-# Basic helpers built in kmake/basic/
-PHONY += scripts_basic
-scripts_basic:
-	$(Q)$(MAKE) $(build)=kmake/basic
-	$(Q)rm -f .tmp_quiet_recordmcount
 
 PHONY += $(build-dirs)
 $(build-dirs): prepare
 	$(Q)$(MAKE) $(build)=$@ need-builtin=1
-
-config: scripts_basic FORCE
-	$(Q)$(MAKE) $(build)=kmake/kconfig $@
-
-%config: scripts_basic FORCE
-	$(Q)$(MAKE) $(build)=kmake/kconfig $@
 
 quiet_cmd_syncconfig = SYNC    $@
       cmd_syncconfig = $(MAKE) -f $(srctree)/Makefile syncconfig
@@ -181,8 +192,41 @@ quiet_cmd_syncconfig = SYNC    $@
 	+$(call cmd,syncconfig)
 
 PHONY += prepare
-
 prepare: include/generated/autoconf.h
+
+clean-dirs := $(addprefix _clean_, $(clean-dirs))
+PHONY += $(clean-dirs) clean
+$(clean-dirs):
+	$(Q)$(MAKE) $(clean)=$(patsubst _clean_%,%,$@)
+
+rm-files += include/config include/generated \
+		.config .config.old
+
+quiet_cmd_rmfiles = $(if $(wildcard $(rm-files)),CLEAN   $(wildcard $(rm-files)))
+      cmd_rmfiles = rm -rf $(rm-files)
+
+export RCS_FIND_IGNORE := \( -name SCCS -o -name BitKeeper -o -name .svn -o    \
+			  -name CVS -o -name .pc -o -name .hg -o -name .git \) \
+			  -prune -o
+
+clean: $(clean-dirs)
+	$(call cmd,rmfiles)
+	@find $(if $(KBUILD_EXTMOD), $(KBUILD_EXTMOD), .) $(RCS_FIND_IGNORE) \
+		\( -name '*.[aios]' -o -name '*.ko' -o -name '.*.cmd' \
+		-o -name '*.ko.*' \
+		-o -name '*.dtb' -o -name '*.dtbo' -o -name '*.dtb.S' -o -name '*.dt.yaml' \
+		-o -name '*.dwo' -o -name '*.lst' \
+		-o -name '*.su' -o -name '*.mod' \
+		-o -name '.*.d' -o -name '.*.tmp' -o -name '*.mod.c' \
+		-o -name '*.lex.c' -o -name '*.tab.[ch]' \
+		-o -name '*.asn1.[ch]' \
+		-o -name '*.symtypes' -o -name 'modules.order' \
+		-o -name '.tmp_*.o.*' \
+		-o -name '*.c.[012]*.*' \
+		-o -name '*.ll' \
+		-o -name '*.gcno' \
+		-o -name '*.*.symversions' \) -type f -print | xargs rm -f
+endif # config-build
 
 PHONY += FORCE
 FORCE:
