@@ -2,20 +2,15 @@ NAME = kmake-example
 
 srctree := $(CURDIR)
 objtree := $(CURDIR)
-src := $(srctree)
-obj := $(objtree)
 
 export srctree objtree
 
 # Beautify output
-include $(srctree)/kmake/Kmake.cout
+include $(srctree)/kmake/Kmake.basic
 
 # That's our default target when none is given on the command line
 PHONY := _all
 _all:
-
-KBUILD_BUILTIN := 1
-export KBUILD_BUILTIN
 
 # Cancel implicit rules on top Makefile
 $(CURDIR)/Makefile Makefile: ;
@@ -30,8 +25,7 @@ CROSS_COMPILE :=
 include $(srctree)/kmake/Kmake.compiler
 NOSTDINC_FLAGS :=
 
-$(info makecmdgoals: $(MAKECMDGOALS))
-include $(srctree)/kmake/Kmake.config
+include $(srctree)/kmake/Kmake.cfg
 
 core-y := init/
 libs-y := lib/
@@ -39,6 +33,10 @@ ARCH_MAKEFILE := $(srctree)/arch/Makefile
 
 # head-y core-y drivers-y libs-y
 include $(srctree)/kmake/Kmake.build
+
+kmake-example: $(build-objs)
+	@echo "  CC      $@"
+	$(Q)$(CC) $(build-objs) -o $@
 
 rm-files += include/config include/generated \
 	.config .config.old kmake-example
