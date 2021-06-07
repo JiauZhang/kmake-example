@@ -1,7 +1,7 @@
 #include <print.h>
 #include <arch.h>
 
-int main()
+int main(void)
 {
     print_string();
     print_arch();

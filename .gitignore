@@ -2,7 +2,8 @@
 *.o
 *.a
 .config*
-include
+include/generated
+include/config
 kmake-example
 
 !.gitignore

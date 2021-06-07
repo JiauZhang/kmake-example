@@ -24,6 +24,8 @@ include $(srctree)/kmake/subarch.include
 CROSS_COMPILE :=
 include $(srctree)/kmake/Kmake.compiler
 NOSTDINC_FLAGS :=
+KBUILD_CFLAGS :=
+KBUILD_AFLAGS :=
 
 include $(srctree)/kmake/Kmake.cfg
 
